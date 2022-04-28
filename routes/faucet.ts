@@ -82,4 +82,21 @@ router.post(
   }
 );
 
+router.get(
+    "/:address",
+    async (req: any, res: any, next: any) => {
+      const { address } = req.params;
+      try {
+        const result = await faucet.sendTokens(address, null);
+        counterDrip.inc();
+        res
+            .status(201)
+            .send(JSON.stringify({ transactionHash: result.transactionHash }));
+      } catch (error) {
+        counterDripError.inc();
+        res.status(422).send(JSON.stringify({ error: error.message }));
+      }
+    }
+);
+
 export { router };
